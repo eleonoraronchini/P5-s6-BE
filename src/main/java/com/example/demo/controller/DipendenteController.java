@@ -27,39 +27,33 @@ public class DipendenteController {
     @ResponseStatus(HttpStatus.CREATED)
     public String createDipendente(@RequestBody DipendenteDTO dipendenteDTO) {
         DipendenteDTO d = service.createDipendente(dipendenteDTO);
-        Dipendente dEntity = DipendenteMapper.toEntity(d);
-        dipendenti.add(dEntity);
         return "Dipendente aggiunto con successo!";
     }
 
     @GetMapping("/findAll")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public List<Dipendente> searchAllDipendenti() {
-        return dipendenti;
+    public List<DipendenteDTO> getAllDipendenti() {
+        return service.getAllDipendenti();
     }
 
     @GetMapping("/findById/{id}")
-    public ResponseEntity<Dipendente> searchById(@PathVariable Long id) {
-        Optional<Dipendente> dipendenteRicercato = service.ricercaDipendenteById(id);
-        if (dipendenteRicercato.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        } else {
-            return new ResponseEntity<>(dipendenteRicercato.get(), HttpStatus.OK);
-        }
+    public DipendenteDTO getDipendente(@PathVariable Long id) {
+        return service.getDipendenteById(id);
     }
 
     @DeleteMapping("/deleteById/{id}")
-    public ResponseEntity<String> deleteById(@PathVariable Long id) {
-        Optional<Dipendente> dipendenteRicercato = service.ricercaDipendenteById(id);
-        if (dipendenteRicercato.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        } else {
-            Dipendente dipendenteTrovato = dipendenteRicercato.get();
-            service.deleteDipendente(dipendenteTrovato);
-            service.deleteDipendentelist(dipendenteTrovato);
-            return new ResponseEntity<>("dipendente eliminato con successo",HttpStatus.ACCEPTED);
+    public String deleteById(@PathVariable Long id) {
+        Dipendente dipendente = new Dipendente();
+        dipendente.setId(id);
+        if(dipendente != null){
+            service.deleteDipendente(dipendente);
+            return "Dipendente rimosso";
         }
+         return "Dipendente non trovato";
+
     }
+}
+    /*
     @PatchMapping("/updateById/{id}")
     public ResponseEntity<DipendenteDTO> updateById(@PathVariable Long id, @RequestBody DipendenteDTO dipendenteDTO) {
         Optional<Dipendente> dipendenteRicercato = dipendenti.stream().filter(dipendente -> dipendente.getId()==id).findFirst();
@@ -79,4 +73,4 @@ public class DipendenteController {
     }
 
 }
-
+*/
