@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity(name = "prenotazioni")
 @Component
@@ -18,12 +19,12 @@ public class Prenotazione {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "id_viaggio")
     private Viaggio viaggio;
     private LocalDate dataRichiesta;
     private String note;
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "id_dipendente")
     private Dipendente dipendente;
 

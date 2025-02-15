@@ -15,7 +15,7 @@ public class Dipendente {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    @Column(unique = true,nullable = false)
+    @Column(name = "username", unique = true,nullable = false)
     private String username;
     @Column(nullable = false)
     private String nome;

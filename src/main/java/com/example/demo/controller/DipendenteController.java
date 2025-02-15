@@ -1,11 +1,10 @@
 package com.example.demo.controller;
 
 import com.example.demo.DTO.DipendenteDTO;
-import com.example.demo.mapper.DipendenteMapper;
+import com.example.demo.DTO.PrenotazioneDTO;
 import com.example.demo.model.Dipendente;
 import com.example.demo.service.DipendenteService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,19 +14,25 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static com.example.demo.mapper.DipendenteMapper.toEntity;
+
 @RestController
 @RequestMapping("/dipendente")
 public class DipendenteController {
     @Autowired
     DipendenteService service;
 
-    public static List<Dipendente> dipendenti = new ArrayList<Dipendente>();
-
     @PostMapping("/create")
     @ResponseStatus(HttpStatus.CREATED)
     public String createDipendente(@RequestBody DipendenteDTO dipendenteDTO) {
         DipendenteDTO d = service.createDipendente(dipendenteDTO);
         return "Dipendente aggiunto con successo!";
+    }
+    @PostMapping("/createPrenotazione")
+    @ResponseStatus(HttpStatus.CREATED)
+    public String createPrenotazione(@RequestBody PrenotazioneDTO prenotazioneDTO){
+        PrenotazioneDTO p = service.createPrenotazione(prenotazioneDTO);
+        return "Prenotazione aggiunta con succeso!";
     }
 
     @GetMapping("/findAll")
@@ -52,25 +57,17 @@ public class DipendenteController {
          return "Dipendente non trovato";
 
     }
-}
-    /*
+
     @PatchMapping("/updateById/{id}")
     public ResponseEntity<DipendenteDTO> updateById(@PathVariable Long id, @RequestBody DipendenteDTO dipendenteDTO) {
-        Optional<Dipendente> dipendenteRicercato = dipendenti.stream().filter(dipendente -> dipendente.getId()==id).findFirst();
-        if (dipendenteRicercato.isEmpty()) {
+      Dipendente dipendente = toEntity(dipendenteDTO);
+      dipendente.setId(id);
+       if (dipendente == null ) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } else {
-            Dipendente d = dipendenteRicercato.get();
-            service.updateDipendente(d);
-            DipendenteDTO updateDipendenteDTO = DipendenteMapper.toDTO(d);
-            d.setUsername(dipendenteDTO.getUsername());
-            d.setNome(dipendenteDTO.getNome());
-            d.setCognome(dipendenteDTO.getCognome());
-            d.setEmail(dipendenteDTO.getEmail());
-
-            return new ResponseEntity<>(updateDipendenteDTO, HttpStatus.OK);
+         DipendenteDTO dip =  service.updateDipendente(dipendente);
+            return new ResponseEntity<>(dip, HttpStatus.OK);
         }
     }
 
 }
-*/

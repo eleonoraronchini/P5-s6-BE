@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class PrenotazioneMapper {
 
-    public PrenotazioneDTO toDTO (Prenotazione prenotazione){
+    public static PrenotazioneDTO toDTO (Prenotazione prenotazione){
         PrenotazioneDTO prenotazioneDTO = new PrenotazioneDTO();
         prenotazioneDTO.setViaggio(prenotazione.getViaggio());
         prenotazioneDTO.setDipendente(prenotazione.getDipendente());
@@ -16,7 +16,7 @@ public class PrenotazioneMapper {
         return prenotazioneDTO;
     }
 
-    public Prenotazione toEntity (PrenotazioneDTO prenotazioneDTO){
+    public static Prenotazione toEntity (PrenotazioneDTO prenotazioneDTO){
         Prenotazione prenotazione = new Prenotazione();
         prenotazione.setViaggio(prenotazioneDTO.getViaggio());
         prenotazione.setDipendente(prenotazioneDTO.getDipendente());

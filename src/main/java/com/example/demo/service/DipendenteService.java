@@ -1,9 +1,17 @@
 package com.example.demo.service;
 
 import com.example.demo.DTO.DipendenteDTO;
+import com.example.demo.DTO.PrenotazioneDTO;
+import com.example.demo.DTO.ViaggioDTO;
 import com.example.demo.mapper.DipendenteMapper;
+import com.example.demo.mapper.PrenotazioneMapper;
+import com.example.demo.mapper.ViaggioMapper;
 import com.example.demo.model.Dipendente;
+import com.example.demo.model.Prenotazione;
+import com.example.demo.model.Viaggio;
 import com.example.demo.repository.dipendenteRepository;
+import com.example.demo.repository.prenotazioneRepository;
+import com.example.demo.repository.viaggioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -11,7 +19,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static com.example.demo.controller.DipendenteController.dipendenti;
 import static com.example.demo.mapper.DipendenteMapper.toDTO;
 import static com.example.demo.mapper.DipendenteMapper.toEntity;
 
@@ -21,7 +28,9 @@ public class DipendenteService {
     @Autowired
     dipendenteRepository dipendenteRepository;
     @Autowired
-    DipendenteMapper dipendenteMapper;
+    prenotazioneRepository prenotazioneRepository;
+    @Autowired
+    viaggioRepository viaggioRepository;
 
     public DipendenteDTO createDipendente(DipendenteDTO dipendenteDTO) {
         Dipendente d = toEntity(dipendenteDTO);
@@ -34,7 +43,15 @@ public class DipendenteService {
         if (dip.isPresent()) {
             return toDTO(dip.get());
         } else {
-            throw new RuntimeException("il dipendente con chiave:" + id + "non è presente");
+            throw new RuntimeException("il dipendente con chiave: " + id + " non è presente");
+        }
+    }
+    public DipendenteDTO getDipendenteByUsername (String username){
+        Optional<Dipendente> dip = Optional.ofNullable(dipendenteRepository.findByusername(username));
+        if (dip.isPresent()){
+            return toDTO(dip.get());
+        } else {
+            throw new RuntimeException("il dipendente con username: " + username + " non è presente");
         }
     }
 
@@ -58,8 +75,7 @@ public class DipendenteService {
         }
         return "dipendente non trovato!";
     }
-}
-    /*
+
 
     public DipendenteDTO updateDipendente(Dipendente dipendente) {
         Optional<Dipendente> dipendenteRicercato = dipendenteRepository.findById(dipendente.getId());
@@ -75,23 +91,43 @@ public class DipendenteService {
         } else {
             throw new RuntimeException("nessun dipendente trovato con questo id");
         }
-    }
-
-    public Optional<Dipendente> ricercaDipendenteById(Long id) {
-        Optional<Dipendente> dipendenteRecuperato = dipendenteRepository.findById(id);
-        return dipendenteRecuperato;
 
     }
 
-    public String deleteDipendentelist(Dipendente dipendente) {
-        Optional<Dipendente> dip = dipendenti.stream().filter(d -> d.getId() == dipendente.getId()).findFirst();
-        if (dip.isPresent()) {
-            dipendenti.remove(dip.get());
-            return "Dipendente rimosso dalla lista";
-        } else {
-            return "Nessun dipendente trovato";
+    public PrenotazioneDTO createPrenotazione (PrenotazioneDTO pDTO){
+        Prenotazione p = PrenotazioneMapper.toEntity(pDTO);
+       Optional <Dipendente> dip = Optional.ofNullable(dipendenteRepository.findByusername(p.getDipendente().getUsername()));
+        if (dip.isPresent()){
+            Dipendente D = dip.get();
+            p.setDipendente(D);
+    } else {
+            DipendenteDTO d = new DipendenteDTO();
+            d.setUsername(p.getDipendente().getUsername());
+            d.setNome(p.getDipendente().getNome());
+            d.setCognome(p.getDipendente().getCognome());
+            d.setEmail(p.getDipendente().getEmail());
+            dipendenteRepository.save(toEntity(d));
+            p.setDipendente(toEntity(d));
+
         }
+        Optional<Viaggio> v = Optional.ofNullable(viaggioRepository.findBydestinazione(p.getViaggio().getDestinazione()));
+        if (v.isPresent()){
+            Viaggio viaggio = v.get();
+            p.setViaggio(viaggio);
+        } else {
+            ViaggioDTO viaggioDTO = new ViaggioDTO();
+            viaggioDTO.setDestinazione(p.getViaggio().getDestinazione());
+            viaggioDTO.setDataViaggio(p.getViaggio().getDataViaggio());
+            viaggioDTO.setStatus(p.getViaggio().getStatus());
+            viaggioRepository.save(ViaggioMapper.toEntity(viaggioDTO));
+            p.setViaggio(ViaggioMapper.toEntity(viaggioDTO));
+        }
+        boolean prenotazioneEsistente = prenotazioneRepository.existsByDipendenteAndViaggio_DataViaggio(p.getDipendente(),p.getViaggio().getDataViaggio());
+        if (prenotazioneEsistente){
+            throw new RuntimeException("Il dipendente ha già una prenotazione per questo giorno.");
+        }
+        prenotazioneRepository.save(p);
+
+        return PrenotazioneMapper.toDTO(p);
     }
 }
-
-*/

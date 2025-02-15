@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface viaggioRepository extends JpaRepository<Viaggio,Long> {
+    public Viaggio findBydestinazione (String destinazione);
 }
