@@ -96,10 +96,9 @@ public class DipendenteService {
 
     public PrenotazioneDTO createPrenotazione (PrenotazioneDTO pDTO){
         Prenotazione p = PrenotazioneMapper.toEntity(pDTO);
-       Optional <Dipendente> dip = Optional.ofNullable(dipendenteRepository.findByusername(p.getDipendente().getUsername()));
-        if (dip.isPresent()){
-            Dipendente D = dip.get();
-            p.setDipendente(D);
+       Dipendente dip = dipendenteRepository.findByusername(p.getDipendente().getUsername());
+        if (dip!= null){
+            p.setDipendente(dip);
     } else {
             DipendenteDTO d = new DipendenteDTO();
             d.setUsername(p.getDipendente().getUsername());
@@ -110,10 +109,9 @@ public class DipendenteService {
             p.setDipendente(toEntity(d));
 
         }
-        Optional<Viaggio> v = Optional.ofNullable(viaggioRepository.findBydestinazione(p.getViaggio().getDestinazione()));
-        if (v.isPresent()){
-            Viaggio viaggio = v.get();
-            p.setViaggio(viaggio);
+        Viaggio v = viaggioRepository.findBydestinazioneAndDataViaggio(p.getViaggio().getDestinazione(), p.getViaggio().getDataViaggio());
+        if (v!=null){
+            p.setViaggio(v);
         } else {
             ViaggioDTO viaggioDTO = new ViaggioDTO();
             viaggioDTO.setDestinazione(p.getViaggio().getDestinazione());

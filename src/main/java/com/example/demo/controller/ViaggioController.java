@@ -3,7 +3,9 @@ package com.example.demo.controller;
 import com.example.demo.DTO.ViaggioDTO;
 import com.example.demo.mapper.ViaggioMapper;
 import com.example.demo.model.Viaggio;
+import com.example.demo.model.enumerations.statoViaggio;
 import com.example.demo.service.ViaggioService;
+import jdk.jshell.Snippet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -48,7 +50,7 @@ public class ViaggioController {
 
     }
 
-    @PatchMapping("/updateById/{id}")
+    @PutMapping("/updateById/{id}")
     public ResponseEntity<ViaggioDTO> updateById(@PathVariable Long id, @RequestBody ViaggioDTO viaggioDTO) {
         Viaggio viaggio = ViaggioMapper.toEntity(viaggioDTO);
         viaggio.setId(id);
@@ -59,6 +61,15 @@ public class ViaggioController {
             return new ResponseEntity<>(v, HttpStatus.OK);
         }
     }
-
-
+    @PatchMapping("/updateStatusById/{id}")
+    public String updateStatus (@PathVariable Long id, @RequestBody statoViaggio status) {
+        Viaggio viaggio = new Viaggio();
+        viaggio.setId(id);
+        viaggio.setStatus(status);
+        if (viaggio != null) {
+            service.changeStatus(viaggio);
+            return "status del viaggio con id: " + id + "aggiornato!";
+        }
+        throw new RuntimeException( "nessun viaggio trovato con id: " + id);
+    }
 }

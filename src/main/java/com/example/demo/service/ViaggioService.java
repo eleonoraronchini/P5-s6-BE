@@ -6,6 +6,7 @@ import com.example.demo.repository.viaggioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -32,8 +33,8 @@ public class ViaggioService {
             throw new RuntimeException("il viaggio con chiave: " + id + " non è presente");
         }
     }
-    public ViaggioDTO getViaggioByDestinazione(String destinazione){
-        Optional<Viaggio> v = Optional.ofNullable(viaggioRepository.findBydestinazione(destinazione));
+    public ViaggioDTO getViaggioByDestinazione(String destinazione, LocalDate dataViaggio){
+        Optional<Viaggio> v = Optional.ofNullable(viaggioRepository.findBydestinazioneAndDataViaggio(destinazione, dataViaggio));
         if (v.isPresent()){
             return toDTO(v.get());
         } else {
@@ -75,6 +76,16 @@ public class ViaggioService {
         } else {
             throw new RuntimeException("nessun viaggio trovato con questo id");
         }
+    }
+    public String changeStatus (Viaggio viaggio){
+        Optional<Viaggio> viaggioRicercato = viaggioRepository.findById(viaggio.getId());
+        if (viaggioRicercato.isPresent()){
+            Viaggio viaggioTrovato = viaggioRicercato.get();
+            viaggioTrovato.setStatus(viaggio.getStatus());
+            viaggioRepository.save(viaggioTrovato);
+            return "Status cambiato!";
+        } else
+       return "nessun viaggio trovato!";
     }
 }
 
