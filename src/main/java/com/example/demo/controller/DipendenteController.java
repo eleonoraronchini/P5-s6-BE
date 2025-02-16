@@ -1,5 +1,7 @@
 package com.example.demo.controller;
 
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import com.example.demo.DTO.DipendenteDTO;
 import com.example.demo.DTO.PrenotazioneDTO;
 import com.example.demo.model.Dipendente;
@@ -7,12 +9,17 @@ import com.example.demo.service.DipendenteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 
-import java.util.ArrayList;
+import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
+
 
 import static com.example.demo.mapper.DipendenteMapper.toEntity;
 
@@ -21,6 +28,8 @@ import static com.example.demo.mapper.DipendenteMapper.toEntity;
 public class DipendenteController {
     @Autowired
     DipendenteService service;
+    @Autowired
+    Cloudinary cloudinary;
 
     @PostMapping("/create")
     @ResponseStatus(HttpStatus.CREATED)
@@ -34,6 +43,31 @@ public class DipendenteController {
         PrenotazioneDTO p = service.createPrenotazione(prenotazioneDTO);
         return "Prenotazione aggiunta con succeso!";
     }
+
+    @PostMapping("/createConFoto")
+    public DipendenteDTO createDipendenteConImmagine(@RequestPart("immagine") MultipartFile immagine, @RequestPart @Validated DipendenteDTO dipendenteDTO, BindingResult validazione){
+
+        if(validazione.hasErrors()){
+            String messaggioErr = "errore validazione \n";
+            for (ObjectError errore : validazione.getAllErrors()){
+                messaggioErr += errore.getDefaultMessage() + " \n";
+            }
+        }
+        try {
+            Map mappa = cloudinary.uploader().upload(immagine.getBytes(), ObjectUtils.emptyMap());
+            // Recupero l'invio
+            String urlImage = (String) mappa.get("secure_url");
+            dipendenteDTO.setImmagine(urlImage);
+            service.createDipendente(dipendenteDTO);
+            return dipendenteDTO;
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
+
 
     @GetMapping("/findAll")
     @ResponseStatus(HttpStatus.ACCEPTED)

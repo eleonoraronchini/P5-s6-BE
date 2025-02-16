@@ -23,4 +23,5 @@ public class Dipendente {
     private String cognome;
     @Column(unique = true,nullable = false)
     private String email;
+    private String immagine;
 }

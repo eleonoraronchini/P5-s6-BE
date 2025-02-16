@@ -19,4 +19,5 @@ public class DipendenteDTO {
     @NotBlank(message = "'email' non può essere dei caratteri vuoti")
     @NotNull(message = "'email' non può essere vuoto")
     private String email;
+    private String immagine;
 }

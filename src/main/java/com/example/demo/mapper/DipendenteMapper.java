@@ -15,6 +15,7 @@ public class DipendenteMapper {
         dipendenteDTO.setNome(dipendente.getNome());
         dipendenteDTO.setCognome(dipendente.getCognome());
         dipendenteDTO.setEmail(dipendente.getEmail());
+        dipendenteDTO.setImmagine(dipendente.getImmagine());
         return dipendenteDTO;
 
     }
@@ -25,21 +26,9 @@ public class DipendenteMapper {
         dipendente.setNome(dipendenteDTO.getNome());
         dipendente.setCognome(dipendenteDTO.getCognome());
         dipendente.setEmail(dipendenteDTO.getEmail());
+        dipendente.setImmagine(dipendenteDTO.getImmagine());
         return dipendente;
     }
-
-    public static DipendenteDTO toDTOpzional(Optional<Dipendente> dipendente) {
-        if (dipendente.isPresent()) {
-            Dipendente dipendenteValue = dipendente.get();
-            DipendenteDTO dipendenteDTO = new DipendenteDTO();
-            dipendenteDTO.setUsername(dipendenteValue.getUsername());
-            dipendenteDTO.setNome(dipendenteValue.getNome());
-            dipendenteDTO.setCognome(dipendenteValue.getCognome());;
-            dipendenteDTO.setEmail(dipendenteValue.getEmail());
-            return dipendenteDTO;
-        } else {
-            return null;
-        }
     }
-}
+
 
