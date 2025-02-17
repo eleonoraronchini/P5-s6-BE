@@ -18,6 +18,8 @@ import java.util.List;
 public class ViaggioController {
     @Autowired
     ViaggioService service;
+    @Autowired
+    ViaggioMapper mapper;
 
 
     @PostMapping("/create")
@@ -62,10 +64,10 @@ public class ViaggioController {
         }
     }
     @PatchMapping("/updateStatusById/{id}")
-    public String updateStatus (@PathVariable Long id, @RequestBody statoViaggio status) {
-        Viaggio viaggio = new Viaggio();
-        viaggio.setId(id);
-        viaggio.setStatus(status);
+    public String updateStatus (@PathVariable Long id, @RequestBody ViaggioDTO dto) {
+        ViaggioDTO viaggioDTO = service.getViaggioById(id);
+        Viaggio viaggio = mapper.toEntity(viaggioDTO);
+        viaggio.setStatus(dto.getStatus());
         if (viaggio != null) {
             service.changeStatus(viaggio);
             return "status del viaggio con id: " + id + "aggiornato!";
